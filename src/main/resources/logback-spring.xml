@@ -1,0 +1,44 @@
+<configuration>
+    <property name="LOG_PATH" value="ihm-consistency-monitoring-api"/>
+    <springProperty name="APP_VERSION" source="spring.application.version"/>
+    <springProperty name="APP_NAME" source="spring.application.name"/>
+    <appender name="consoleAppenderJson" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <mdc/><!-- MDC variables on the Thread will be written as JSON fields -->
+                <context/> <!-- Outputs entries from logback's context -->
+                <logLevel/>
+                <loggerName/>
+                <pattern>
+                    <pattern>
+                        {
+                        "appName": "${APP_NAME}",
+                        "appVersion": "${APP_VERSION}"
+                        }
+                    </pattern>
+                </pattern>
+                <threadName/>
+                <message/>
+                <logstashMarkers/> <!-- Useful so we can add extra information for specific log lines as Markers -->
+                <arguments/> <!-- or through StructuredArguments -->
+                <stackTrace/>
+            </providers>
+        </encoder>
+    </appender>
+    <springProfile name="dev,ci,perf,stg,uat">
+        <root>
+            <appender-ref ref="consoleAppenderJson"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="prod">
+        <root>
+            <appender-ref ref="consoleAppenderJson"/>
+        </root>
+    </springProfile>
+    <springProfile name="default,local">
+        <root>
+            <appender-ref ref="consoleAppenderJson"/>
+        </root>
+    </springProfile>
+</configuration>
